@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Understanding Clustering in Self-Organizing Maps Using the Iris Dataset</title>
+
+<style>
+
+body{
+font-family: Arial, sans-serif;
+line-height:1.6;
+margin:40px;
+background:#f9f9f9;
+color:#333;
+max-width:1000px;
+}
+
+.container{
+margin:auto;
+max-width:900px;
+}
+
+nav{
+text-align:center;
+margin-bottom:30px;
+}
+
+nav a{
+margin:0 10px;
+text-decoration:none;
+color:#3498DB;
+font-weight:bold;
+}
+
+nav a:hover{
+text-decoration:underline;
+}
+
+h1,h2,h3{
+color:#2C3E50;
+}
+
+code{
+background:#f0f0f0;
+padding:3px 6px;
+border-radius:4px;
+}
+
+pre{
+background:#f0f0f0;
+padding:15px;
+border-left:5px solid #3498DB;
+overflow-x:auto;
+}
+
+img{
+max-width:100%;
+display:block;
+margin:20px auto;
+border-radius:5px;
+border:1px solid #ddd;
+}
+
+.section{
+margin-bottom:40px;
+}
+
+footer{
+text-align:center;
+margin-top:50px;
+font-size:14px;
+color:#555;
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+<h1>Understanding Clustering in Self-Organizing Maps Using the Iris Dataset</h1>
+
+<nav>
+<a href="#introduction">Introduction</a> |
+<a href="#dataset">Dataset</a> |
+<a href="#algorithm">SOM Algorithm</a> |
+<a href="#implementation">Implementation</a> |
+<a href="#results">Results</a> |
+<a href="#analysis">Analysis</a> |
+<a href="#ethics">Ethical AI</a> |
+<a href="#conclusion">Conclusion</a> |
+<a href="#references">References</a>
+</nav>
+
+
+<div class="section" id="introduction">
+
+<h2>1. Introduction</h2>
+
+<p>
+Modern datasets often contain many variables, making them difficult to interpret and visualize. 
+Traditional visualization methods such as scatter plots become limited when working with high-dimensional data. 
+Machine learning techniques can help reveal hidden patterns and structures that are not easily visible using conventional methods.
+</p>
+
+<p>
+Self-Organizing Maps (SOM), introduced by Teuvo Kohonen, are a type of unsupervised neural network that maps high-dimensional data onto a two-dimensional grid. 
+The SOM preserves topological relationships between data points, meaning that similar samples are placed close together on the grid. 
+This property allows researchers to visualize complex datasets and identify clusters or patterns in the data.
+</p>
+
+<p>
+In this tutorial, we demonstrate how Self-Organizing Maps can be used to understand clustering behaviour in data. 
+Using the classic Iris dataset, we train a SOM and explore several visualization tools including the U-Matrix, label overlays, and component planes. 
+These visualisations help explain how the SOM organizes data and which features influence the clustering structure.
+</p>
+
+</div>
+
+
+<div class="section" id="dataset">
+
+<h2>2. Dataset Description</h2>
+
+<p>
+The Iris dataset is one of the most widely used datasets in machine learning. 
+It contains 150 samples of iris flowers belonging to three species:
+</p>
+
+<ul>
+<li>Iris setosa</li>
+<li>Iris versicolor</li>
+<li>Iris virginica</li>
+</ul>
+
+<p>
+Each sample includes four numerical features:
+</p>
+
+<ul>
+<li>Sepal length</li>
+<li>Sepal width</li>
+<li>Petal length</li>
+<li>Petal width</li>
+</ul>
+
+<p>
+These measurements allow machine learning algorithms to identify patterns and relationships between the species.
+</p>
+
+</div>
+
+
+<div class="section" id="algorithm">
+
+<h2>3. Self-Organizing Map Algorithm</h2>
+
+<p>
+A Self-Organizing Map consists of a grid of neurons, where each neuron contains a weight vector of the same dimension as the input data. 
+During training, the SOM learns to represent the structure of the dataset by adjusting these weight vectors.
+</p>
+
+<h3>Key Concepts</h3>
+
+<p><strong>Best Matching Unit (BMU)</strong><br>
+For each input sample, the neuron whose weight vector is closest to the input vector is selected. 
+This neuron is called the Best Matching Unit.
+</p>
+
+<p><strong>Neighbourhood Learning</strong><br>
+When the BMU is updated, nearby neurons on the grid are also adjusted. 
+This neighbourhood update helps preserve the topology of the data.
+</p>
+
+<p><strong>Learning Rate</strong><br>
+The learning rate controls how much weights change during training and gradually decreases as training progresses.
+</p>
+
+
+<h3>Training Process</h3>
+
+<ol>
+<li>Initialize neuron weight vectors randomly.</li>
+<li>Select a sample from the dataset.</li>
+<li>Find the Best Matching Unit (BMU).</li>
+<li>Update the BMU and its neighbouring neurons.</li>
+<li>Decrease learning rate and neighbourhood radius.</li>
+<li>Repeat for many iterations until convergence.</li>
+</ol>
+
+<p>
+The SOM weight update rule is:
+</p>
+
+<code>
+w_i(t+1) = w_i(t) + α(t) * h_ci(t) * (x − w_i(t))
+</code>
+
+</div>
+
+
+<div class="section" id="implementation">
+
+<h2>4. Implementation in Python</h2>
+
+<p>
+We implement the SOM using the MiniSom Python library. The grid size is set to 7×7 neurons to allow clusters to emerge during training.
+</p>
+
+<pre>
+<code>
+from minisom import MiniSom
+from sklearn.datasets import load_iris
+import numpy as np
+
+data = load_iris()
+X = data.data
+y = data.target
+
+som = MiniSom(x=7, y=7, input_len=4, sigma=1.0, learning_rate=0.5)
+
+som.random_weights_init(X)
+som.train_random(X, 100)
+</code>
+</pre>
+
+</div>
+
+
+<div class="section" id="results">
+
+<h2>5. U-Matrix Visualization</h2>
+
+<p>
+The U-Matrix (Unified Distance Matrix) visualizes distances between neighbouring neurons in the SOM grid. 
+Large distances between neurons often indicate cluster boundaries.
+</p>
+
+<img src="figures/som_u_matrix.png"
+alt="U-Matrix visualization showing cluster boundaries in the SOM grid">
+
+
+<h2>6. Label Overlay</h2>
+
+<p>
+By plotting the class labels on the SOM grid, we can see how different species cluster together. 
+If the SOM has successfully captured the structure of the dataset, samples from the same class will appear close together.
+</p>
+
+<img src="figures/som_labels_overlay.png"
+alt="SOM grid with Iris species labels showing cluster grouping">
+
+
+<h2>7. Component Planes</h2>
+
+<p>
+Component planes display how each feature is distributed across the SOM grid. 
+By comparing component planes, we can identify which variables influence clustering.
+</p>
+
+<img src="figures/component_plane_0.png"
+alt="Component plane showing distribution of sepal length">
+
+<img src="figures/component_plane_1.png"
+alt="Component plane showing distribution of sepal width">
+
+<img src="figures/component_plane_2.png"
+alt="Component plane showing distribution of petal length">
+
+<img src="figures/component_plane_3.png"
+alt="Component plane showing distribution of petal width">
+
+</div>
+
+
+<div class="section" id="analysis">
+
+<h2>8. Analysis</h2>
+
+<p>
+The SOM organizes the Iris dataset into meaningful clusters. 
+The species Iris setosa forms a clearly separated group, while Iris versicolor and Iris virginica partially overlap. 
+This reflects the fact that the two species share more similar measurements.
+</p>
+
+<p>
+The component planes reveal that petal length and petal width strongly influence the clustering structure. 
+Sepal measurements contribute less to the separation of species.
+</p>
+
+</div>
+
+
+<div class="section" id="ethics">
+
+<h2>9. Ethical Considerations</h2>
+
+<p>
+Although Self-Organizing Maps are unsupervised algorithms, they can still reflect biases present in the data used to train them. 
+When applied to sensitive domains such as healthcare, hiring, or finance, clusters discovered by machine learning models may influence important decisions.
+</p>
+
+<p>
+It is therefore important to interpret results carefully, evaluate data sources critically, and communicate uncertainty when presenting clustering results.
+</p>
+
+</div>
+
+
+<div class="section" id="conclusion">
+
+<h2>10. Conclusion</h2>
+
+<p>
+Self-Organizing Maps provide an intuitive way to visualize and analyze high-dimensional data. 
+In this tutorial, we used SOM to explore clustering behaviour in the Iris dataset and demonstrated several visualization tools including the U-Matrix and component planes.
+</p>
+
+<p>
+These techniques help researchers better understand how datasets are structured and how individual features contribute to clustering patterns.
+</p>
+
+</div>
+
+
+<div class="section" id="references">
+
+<h2>References</h2>
+
+<ul>
+
+<li>Kohonen, T. (2001). Self-Organizing Maps. Springer.</li>
+
+<li>Vesanto, J. (1999). SOM-based data visualization methods. Intelligent Data Analysis.</li>
+
+<li>MiniSom Library: https://github.com/JustGlowing/minisom</li>
+
+<li>Scikit-learn Iris Dataset Documentation: https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_iris.html</li>
+
+</ul>
+
+</div>
+
+
+<footer>
+
+© 2026 Priston Dlima – Self-Organizing Map Tutorial
+
+</footer>
+
+</div>
+
+</body>
+</html>
